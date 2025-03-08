@@ -1,7 +1,10 @@
-import SubscriptionForm from '@/app/(home)/subscription-form'
+import SubscriptionForm, {
+  SubscriptionFormFallback,
+} from '@/app/(home)/subscription-form'
 import logo from '@/assets/logo.svg'
 import { Radio } from 'lucide-react'
 import Image from 'next/image'
+import { Suspense } from 'react'
 
 export default function Home() {
   return (
@@ -38,7 +41,9 @@ export default function Home() {
           </div>
         </div>
 
-        <SubscriptionForm />
+        <Suspense fallback={<SubscriptionFormFallback />}>
+          <SubscriptionForm />
+        </Suspense>
       </div>
     </div>
   )

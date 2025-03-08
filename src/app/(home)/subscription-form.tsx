@@ -87,3 +87,37 @@ export default function SubscriptionForm() {
     </form>
   )
 }
+
+export function SubscriptionFormFallback() {
+  return (
+    <form className="w-full space-y-6 rounded-2xl border border-gray-600 bg-gray-700 p-8 lg:max-w-[440px]">
+      <h2 className="font-heading font-semibold text-gray-200 text-xl">
+        Inscrição
+      </h2>
+      <div className="space-y-3">
+        <div className="space-y-2">
+          <InputRoot>
+            <InputIcon>
+              <User />
+            </InputIcon>
+            <InputField placeholder="Nome completo" disabled />
+          </InputRoot>
+        </div>
+
+        <div className="space-y-2">
+          <InputRoot>
+            <InputIcon>
+              <Mail />
+            </InputIcon>
+            <InputField type="email" placeholder="E-mail" disabled />
+          </InputRoot>
+        </div>
+      </div>
+
+      <Button type="submit" disabled>
+        Confirmar
+        <ArrowRight />
+      </Button>
+    </form>
+  )
+}
