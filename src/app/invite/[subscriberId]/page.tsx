@@ -1,12 +1,19 @@
-import InviteLinkInput from '@/app/invite/invite-link-input'
-import Ranking from '@/app/invite/ranking'
-import Stats from '@/app/invite/stats'
+import InviteLinkInput from '@/app/invite/[subscriberId]/invite-link-input'
+import Ranking from '@/app/invite/[subscriberId]/ranking'
+import Stats from '@/app/invite/[subscriberId]/stats'
 import logo from '@/assets/logo.svg'
-
 import Image from 'next/image'
 
-export default function InvitePage() {
-  const inviteLink = 'http://localhost:3000/invite/akmnchbadcgvadgcvhgavcgha'
+interface InvitePageProps {
+  params: Promise<{
+    subscriberId: string
+  }>
+}
+
+export default async function InvitePage({ params }: InvitePageProps) {
+  const { subscriberId } = await params
+
+  const inviteLink = `${process.env.NEXT_PUBLIC_API_URL}/invites/${subscriberId}`
 
   return (
     <div className="flex min-h-dvh flex-col items-center justify-between gap-16 lg:flex-row">
@@ -36,7 +43,7 @@ export default function InvitePage() {
 
           <InviteLinkInput inviteLink={inviteLink} />
 
-          <Stats />
+          <Stats subscriberId={subscriberId} />
         </div>
       </div>
 
