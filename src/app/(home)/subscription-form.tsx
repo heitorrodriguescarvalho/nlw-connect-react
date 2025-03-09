@@ -4,8 +4,9 @@ import Button from '@/components/button'
 import { InputField, InputIcon, InputRoot } from '@/components/input'
 import { subscribeToEvent } from '@/http/api'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ArrowRight, Mail, User } from 'lucide-react'
+import { ArrowRightIcon, Loader2Icon, Mail, User } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { useTransition } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -20,20 +21,27 @@ export default function SubscriptionForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
+  const [isPending, startTransition] = useTransition()
+
   const {
     register,
     handleSubmit,
+    
     formState: { errors },
   } = useForm<SubscriptionSchema>({
     resolver: zodResolver(subscriptionSchema),
   })
 
-  const handleSubscribe = async ({ name, email }: SubscriptionSchema) => {
-    const referrer = searchParams.get('referrer')
+  const handleSubscribe = ({ name, email }: SubscriptionSchema) => {
+    startTransition(async () => {
+      const referrer = searchParams.get('referrer')
+      
+      const { subscriberId } = await subscribeToEvent({ name, email, referrer })
 
-    const { subscriberId } = await subscribeToEvent({ name, email, referrer })
+      await new Promise((resolve) => setTimeout(resolve, 1000))
 
     router.push(`/invite/${subscriberId}`)
+    })
   }
 
   return (
@@ -50,7 +58,7 @@ export default function SubscriptionForm() {
             <InputIcon>
               <User />
             </InputIcon>
-            <InputField placeholder="Nome completo" {...register('name')} />
+            <InputField placeholder="Nome completo" {...register('name')} disabled={register('name').disabled || isPending} />
           </InputRoot>
 
           {errors.name && (
@@ -69,6 +77,7 @@ export default function SubscriptionForm() {
               type="email"
               placeholder="E-mail"
               {...register('email')}
+              disabled={register('name').disabled || isPending}
             />
           </InputRoot>
 
@@ -80,9 +89,9 @@ export default function SubscriptionForm() {
         </div>
       </div>
 
-      <Button type="submit">
-        Confirmar
-        <ArrowRight />
+      <Button type="submit" disabled={isPending}>
+        {isPending ? 'Confirmando...' : 'Confirmar'}
+        {isPending ? <Loader2Icon className="animate-spin" /> : <ArrowRightIcon />}
       </Button>
     </form>
   )
@@ -116,7 +125,7 @@ export function SubscriptionFormFallback() {
 
       <Button type="submit" disabled>
         Confirmar
-        <ArrowRight />
+        <ArrowRightIcon />
       </Button>
     </form>
   )
